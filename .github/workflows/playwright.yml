@@ -30,7 +30,7 @@ jobs:
 
       - name: Run tests
         run: |
-          pytest tests/ -v --tb=short --headless -q
+          pytest tests/ -v --tb=short -q
 
       - name: Upload test results
         if: always()
