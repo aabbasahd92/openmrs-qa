@@ -1,0 +1,41 @@
+[
+  {
+    "given": "Alice",
+    "middle": "Marie",
+    "family": "DataPatient",
+    "gender": "female",
+    "dob": "1992-03-10",
+    "address1": "10 Elm Street",
+    "city": "Nairobi",
+    "state": "Nairobi",
+    "country": "Kenya",
+    "postal": "00100",
+    "phone": "0711111111"
+  },
+  {
+    "given": "Bob",
+    "middle": "James",
+    "family": "DataPatient",
+    "gender": "male",
+    "dob": "1985-07-22",
+    "address1": "22 Oak Avenue",
+    "city": "Mombasa",
+    "state": "Coast",
+    "country": "Kenya",
+    "postal": "80100",
+    "phone": "0722222222"
+  },
+  {
+    "given": "Fatima",
+    "middle": "Hassan",
+    "family": "DataPatient",
+    "gender": "female",
+    "dob": "2000-11-05",
+    "address1": "5 Cedar Road",
+    "city": "Kisumu",
+    "state": "Nyanza",
+    "country": "Kenya",
+    "postal": "40100",
+    "phone": "0733333333"
+  }
+]
