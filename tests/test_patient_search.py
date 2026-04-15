@@ -12,7 +12,9 @@ def logged_in(page, base_url):
 
 def test_search_icon_visible(logged_in, base_url):
     """Search patient button is visible in the nav bar"""
+    logged_in.locator("button[aria-label='Search patient']").wait_for(state="visible", timeout=15000)
     expect(logged_in.locator("button[aria-label='Search patient']")).to_be_visible()
+
 
 def test_search_overlay_opens(logged_in, base_url):
     """Clicking search icon opens the search input overlay"""
@@ -34,3 +36,5 @@ def test_search_no_results(logged_in, base_url):
     logged_in.wait_for_timeout(2000)
     # Actual OpenMRS O3 message when no patient found
     expect(logged_in.locator("text=Sorry, no patient charts were found")).to_be_visible(timeout=5000)
+
+

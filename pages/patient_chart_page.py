@@ -8,8 +8,8 @@ class PatientChartPage:
 
     def navigate(self, base_url, patient_uuid):
         self.page.goto(f"{base_url}/patient/{patient_uuid}/chart")
-        self.page.wait_for_load_state("networkidle", timeout=20000)
-        self.page.wait_for_timeout(2000)
+        self.page.wait_for_load_state("domcontentloaded", timeout=20000)
+        self.page.locator("h4").first.wait_for(state="visible", timeout=30000)
 
     def get_current_url(self):
         return self.page.url

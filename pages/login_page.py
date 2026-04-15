@@ -1,3 +1,5 @@
+import re
+
 class LoginPage:
     def __init__(self, page):
         self.page = page
@@ -30,9 +32,12 @@ class LoginPage:
     def full_login(self, base_url, username="admin", password="Admin123"):
         self.navigate(base_url)
         self.login(username, password)
-        self.page.wait_for_url("**/login/location", timeout=15000)
-        self.select_location()
-        self.page.wait_for_url("**/home", timeout=15000)
+        # Handle both: location step required OR session skips straight to home
+        self.page.wait_for_url(re.compile(r".*(home|login/location).*"), timeout=15000)
+        if "location" in self.page.url:
+            self.select_location()
+            self.page.wait_for_url("**/home", timeout=15000)
+        self.page.wait_for_load_state("networkidle", timeout=15000)
 
     def get_error_message(self):
         self.error_message.wait_for(state="visible", timeout=10000)
