@@ -1,0 +1,45 @@
+name: OpenMRS QA - Parallel CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: "3.9"
+
+      - name: Install dependencies
+        run: |
+          pip install -r requirements.txt
+          playwright install chromium
+
+      - name: Run tests (parallel - 4 workers)
+        run: |
+          pytest tests/ -n 4 \
+            --alluredir=allure-results \
+            --clean-alluredir \
+            -v --tb=short \
+            2>&1 | tee test-results.log
+
+      - name: Print timing summary
+        if: always()
+        run: |
+          grep -E "passed|failed|error|seconds" test-results.log | tail -5
+
+      - name: Upload Allure results
+        if: always()
+        uses: actions/upload-artifact@v3
+        with:
+          name: allure-results
+          path: allure-results/
