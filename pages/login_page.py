@@ -37,7 +37,7 @@ class LoginPage:
         if "location" in self.page.url:
             self.select_location()
             self.page.wait_for_url("**/home", timeout=15000)
-        self.page.wait_for_load_state("networkidle", timeout=15000)
+        self.page.wait_for_selector("nav, [class*='header'], svg", timeout=30000)
 
     def get_error_message(self):
         self.error_message.wait_for(state="visible", timeout=10000)
