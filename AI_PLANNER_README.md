@@ -64,3 +64,59 @@ pytest ai_planner/test_planner.py -v
 
 These mock both the Anthropic client and the Playwright DOM capture, so they
 run in CI without secrets and without a browser.
+
+---
+
+## Documented Guardrail Case: Live Run Against a Blocked Environment
+
+**Date:** 2026-07-11
+**Command run:**
+```bash
+python -m ai_planner.planner \
+  --requirement requirements/GH-001-appointment-scheduling.md \
+  --url https://test3.openmrs.org/openmrs/spa/home \
+  --out specs/pending/GH-001-outage-case.md
+```
+
+**Result:** 0 VERIFIED / 5 ASSUMPTION_REQUIRES_REVIEW / 3 REJECTED_UNSUPPORTED
+
+### What happened
+
+`test3.openmrs.org` returned a Cloudflare bot-challenge page instead of the OpenMRS
+application (Ray ID `a19a2f752d880607`) — headless Chromium was blocked before reaching
+any real UI. This was not staged; it's the live state of the public demo server at
+the time this was run.
+
+### Why this is the guardrail working, not a failed run
+
+The planner had zero real evidence of the appointments UI and correctly refused to
+mark anything `VERIFIED`. Every `ASSUMPTION_REQUIRES_REVIEW` rationale cites the actual
+evidence rather than asserting a conclusion, for example:
+
+> "The DOM evidence shows only a Cloudflare security verification page — the
+> application UI is not accessible, so no patient search widget, input field, or
+> search results list could be confirmed in the live DOM."
+
+The three `REJECTED_UNSUPPORTED` scenarios (payment collection, SMS/email reminders,
+multi-provider conflict detection) were correctly rejected on a *different* basis —
+grounded in the requirement's explicit "Out of Scope" list, not the DOM evidence. The
+planner kept these two reasoning paths (evidence-based vs. requirement-based
+rejection) distinct rather than conflating them.
+
+### The catch that stood out
+
+The requirement doc instructs: *"planner must verify this via live exploration, not
+assume."* The model's own flagged notes pointed out that live exploration was itself
+blocked by the Cloudflare challenge — so the verification instruction couldn't be
+followed, and it said so explicitly rather than silently guessing. It also flagged an
+unrelated inconsistency in the requirement doc itself (title says "patient-facing
+flow," all acceptance criteria describe clinician actions) — a legitimate requirements
+review catch, not something scripted into the test.
+
+### Takeaway
+
+An AI planner with no evidence requirement would have had no reason not to invent
+plausible-sounding scenarios for a "typical" appointment-scheduling flow. Grounding
+every scenario in a live DOM snapshot meant this run produced zero false positives
+against an environment that was, in fact, completely inaccessible — the correct
+outcome, arrived at honestly rather than by coincidence.
