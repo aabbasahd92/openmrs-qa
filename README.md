@@ -1,3 +1,17 @@
+# OpenMRS QA Automation Framework
+
+Healthcare SaaS QA automation for OpenMRS O3, built with Playwright + Python.
+
+**Highlights:**
+- 25 automated tests across 6 modules — UI, REST API, and hybrid UI+API coverage
+- 4x parallel execution via pytest-xdist, full CI/CD with Allure reporting
+- **AI-assisted test planning** — Claude reviews requirements against live DOM evidence and
+  classifies proposed scenarios as VERIFIED / ASSUMPTION_REQUIRES_REVIEW / REJECTED_UNSUPPORTED
+  before any test code is written. No auto-generated tests without human approval. See
+  [`AI_PLANNER_README.md`](./AI_PLANNER_README.md) for a real documented guardrail case run
+  against a live (and, at the time, inaccessible) demo environment.
+
+
 ---
 
 ## Test Modules
@@ -106,8 +120,9 @@ assumptions after test code is already written.
 - 4/4 mocked unit tests passing (classification logic, JSON schema validation, Markdown
   rendering) — see `ai_planner/test_planner.py`
 - CI: `AI Planner Smoke Tests` workflow, scoped to `ai_planner/**` changes
-- Not yet run against a live requirement end-to-end; `requirements/GH-001-appointment-scheduling.md`
-  is the first target once an environment with the Appointments module installed is available
+- Run live once against test3.openmrs.org — result: 0 VERIFIED / 5 ASSUMPTION_REQUIRES_REVIEW /
+  3 REJECTED_UNSUPPORTED, correctly reflecting that the server was unreachable (Cloudflare
+  bot-challenge) at run time. Full trace in `AI_PLANNER_README.md`.
 - **Logged:** 2026-07-11
 
 ## Author
