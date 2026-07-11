@@ -6,3 +6,4 @@ allure-results/
 screenshots/
 .DS_Store
 /tmp/
+specs/pending/
