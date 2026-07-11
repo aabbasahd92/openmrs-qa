@@ -26,14 +26,13 @@ functions — written by hand, using the existing page objects in `pages/`.
 - It is not a multi-agent framework. It's one script that makes one
   structured API call and parses the result.
 - It does not "self-heal" tests or auto-merge anything.
-- It has not run against a real appointment-scheduling flow yet — the
-  `requirements/GH-001-appointment-scheduling.md` example is a template
-  showing the intended input format, to be run against an OpenMRS
-  environment with the appointments module installed. This repo's main
-  README already documents that test3.openmrs.org doesn't have this module
-  — this script surfaces that same kind of mismatch automatically, as a
-  REJECTED_UNSUPPORTED or flagged item, instead of a human discovering it
-  manually after tests are written.
+- It has been run live once so far, against test3.openmrs.org — see
+  "Documented Guardrail Case" below. That run correctly produced zero
+  VERIFIED scenarios because the target server was inaccessible at the time
+  (a Cloudflare bot-challenge blocked the page). It has not yet been run
+  against an environment where the Appointments module is confirmed
+  installed and reachable, which is the next step toward a genuine
+  end-to-end VERIFIED case.
 
 ## Why this design
 

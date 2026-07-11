@@ -80,21 +80,6 @@ pytest tests/test_patient_chart.py -v
 
 ---
 
-## Author
-
-**Ahmed Abbas** — Senior QA Automation Engineer
-7+ years Healthcare QA | CVS Health | Aetna
-
-[LinkedIn](https://www.linkedin.com/in/ahamed-abbas-49421856/) · [GitHub](https://github.com/aabbasahd92)
-'''
-
-with open('/Users/ahmedabbas/openmrs-qa/README.md', 'w') as f:
-    f.write(readme)
-print("README written successfully")
-PYEOF
-
----
-
 ## AI-Assisted Test Planning (Experimental Addition)
 
 ### What it does
@@ -124,3 +109,18 @@ assumptions after test code is already written.
 - Not yet run against a live requirement end-to-end; `requirements/GH-001-appointment-scheduling.md`
   is the first target once an environment with the Appointments module installed is available
 - **Logged:** 2026-07-11
+
+## Author
+
+**Ahmed Abbas** — Senior QA Automation Engineer
+7+ years Healthcare QA | CVS Health | Aetna
+
+[LinkedIn](https://www.linkedin.com/in/ahamed-abbas-49421856/) · [GitHub](https://github.com/aabbasahd92)
+'''
+
+with open('/Users/ahmedabbas/openmrs-qa/README.md', 'w') as f:
+    f.write(readme)
+print("README written successfully")
+PYEOF
+
+---
