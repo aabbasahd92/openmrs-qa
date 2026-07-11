@@ -104,43 +104,49 @@ class PlannerResult:
 
 
 def capture_dom_evidence(url: str, timeout_ms: int = 15000) -> str:
-    """Pull a lightweight, text-only accessibility snapshot of the live page."""
+    """Pull a lightweight, text-only accessibility snapshot of the live page.
+
+    Uses Locator.aria_snapshot(), the current supported Playwright API for
+    accessibility-tree capture. The older Page.accessibility.snapshot() API
+    this originally used was removed in recent Playwright releases (this
+    framework hit that removal directly — see AI_PLANNER_README.md for the
+    live trace where a real navigation failure surfaced this).
+
+    If the page fails to load at all (timeout, DNS failure, server error),
+    that failure is captured as evidence too, rather than raised — an
+    unreachable page is itself a valid, important signal for the planner:
+    it means no scenario can be VERIFIED against this environment right now.
+    """
     with sync_playwright() as p:
         browser = p.chromium.launch(headless=True)
         page = browser.new_page()
-        page.goto(url, timeout=timeout_ms)
-        page.wait_for_timeout(2000)
-        snapshot = page.accessibility.snapshot()
-        visible_text = page.inner_text("body")[:4000]
+        nav_error = None
+        try:
+            page.goto(url, timeout=timeout_ms)
+            page.wait_for_timeout(2000)
+        except Exception as e:
+            nav_error = str(e)
+
+        try:
+            aria_tree = page.locator("body").aria_snapshot()
+        except Exception as e:
+            aria_tree = f"(aria_snapshot failed: {e})"
+
+        try:
+            visible_text = page.inner_text("body")[:4000]
+        except Exception as e:
+            visible_text = f"(inner_text failed: {e})"
+
         browser.close()
 
     return json.dumps(
         {
-            "accessibility_tree_excerpt": _trim_tree(snapshot, max_nodes=150),
+            "navigation_error": nav_error,
+            "aria_snapshot_excerpt": aria_tree[:6000],
             "visible_text_excerpt": visible_text,
         },
         indent=2,
     )
-
-
-def _trim_tree(node, max_nodes: int, count: list = None) -> dict:
-    if count is None:
-        count = [0]
-    if node is None or count[0] >= max_nodes:
-        return None
-    count[0] += 1
-    trimmed = {"role": node.get("role"), "name": node.get("name")}
-    children = node.get("children") or []
-    trimmed_children = []
-    for child in children:
-        t = _trim_tree(child, max_nodes, count)
-        if t:
-            trimmed_children.append(t)
-        if count[0] >= max_nodes:
-            break
-    if trimmed_children:
-        trimmed["children"] = trimmed_children
-    return trimmed
 
 
 def run_planner(requirement_path: Path, target_url: str, api_key: str = None) -> PlannerResult:
