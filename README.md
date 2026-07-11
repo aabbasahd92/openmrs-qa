@@ -92,3 +92,35 @@ with open('/Users/ahmedabbas/openmrs-qa/README.md', 'w') as f:
     f.write(readme)
 print("README written successfully")
 PYEOF
+
+---
+
+## AI-Assisted Test Planning (Experimental Addition)
+
+### What it does
+
+`ai_planner/planner.py` reads a written requirement, captures a live DOM/accessibility
+snapshot of the actual running application via Playwright, and asks Claude (Anthropic API)
+to propose test scenarios — each classified `VERIFIED`, `ASSUMPTION_REQUIRES_REVIEW`, or
+`REJECTED_UNSUPPORTED` based on whether the requirement and the live evidence actually
+support it. No test code is generated automatically; a human reviews and approves the plan
+first. Full detail in [`AI_PLANNER_README.md`](./AI_PLANNER_README.md).
+
+### Why evidence-based planning matters here
+
+Public OpenMRS demo servers (test3.openmrs.org, dev3.openmrs.org, demo.openmrs.org) are
+shared community infrastructure and go down or change without notice — this framework has
+already hit that with the Appointments module gap logged above. An AI planner that reasons
+only from training data would hallucinate scenarios against features that were never
+verified as present. Grounding every scenario in a live DOM snapshot means the planner
+itself catches this class of mismatch and flags it, rather than a human discovering broken
+assumptions after test code is already written.
+
+### Status
+
+- 4/4 mocked unit tests passing (classification logic, JSON schema validation, Markdown
+  rendering) — see `ai_planner/test_planner.py`
+- CI: `AI Planner Smoke Tests` workflow, scoped to `ai_planner/**` changes
+- Not yet run against a live requirement end-to-end; `requirements/GH-001-appointment-scheduling.md`
+  is the first target once an environment with the Appointments module installed is available
+- **Logged:** 2026-07-11
