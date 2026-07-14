@@ -298,5 +298,9 @@ def main():
     print("\nNo test code modified. Review suggested fixes before applying.")
 
 
+
+# CI verification: confirms allure-pytest is now installed in the
+# Failure Classifier Smoke Tests workflow so this module's tests can run.
+
 if __name__ == "__main__":
     main()
