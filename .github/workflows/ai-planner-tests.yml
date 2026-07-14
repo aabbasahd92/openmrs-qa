@@ -22,7 +22,7 @@ jobs:
 
       - name: Install dependencies
         run: |
-          pip install anthropic pytest playwright
+          pip install anthropic pytest playwright allure-pytest
 
       - name: Run planner unit tests (mocked, no live API calls)
         run: pytest ai_planner/test_planner.py -v
