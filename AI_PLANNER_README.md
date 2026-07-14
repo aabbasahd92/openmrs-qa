@@ -119,3 +119,53 @@ plausible-sounding scenarios for a "typical" appointment-scheduling flow. Ground
 every scenario in a live DOM snapshot meant this run produced zero false positives
 against an environment that was, in fact, completely inaccessible — the correct
 outcome, arrived at honestly rather than by coincidence.
+
+---
+
+## Failure Classifier: Diagnosing Test Failures (Human Review Required)
+
+`ai_planner/failure_classifier.py` extends the same evidence-grounded pattern to test
+*failures* rather than test *planning*. It takes a `pytest-json-report` output, sends
+each failed test's traceback to Claude, and classifies the root cause as
+`LOCATOR_DRIFT`, `TIMING_ISSUE`, `ENVIRONMENT_ISSUE`, `REAL_DEFECT`, or `UNKNOWN`,
+with a suggested minimal fix. It never modifies test code, retries a test, or opens
+a pull request — the output is a Markdown report for a human to review.
+
+### A real bug this caught in its own first run
+
+`pytest-json-report` uses `outcome="error"` for fixture setup failures (e.g. a login
+fixture that times out before the test body even runs) — distinct from
+`outcome="failed"` for assertion failures inside the test itself. The first version
+of `extract_failures_from_report` only checked for `"failed"` and would have silently
+dropped 15 of 25 real failures from a live run without raising any error. Caught before
+committing, with a regression test added for it. Documented here because silently
+missing partial results is exactly the class of tool bug that's easy to ship unnoticed.
+
+### Live run against the same outage as the planner's guardrail case
+
+Run: **Date:** 2026-07-11
+```bash
+pytest tests/ --json-report --json-report-file=pytest_report.json -q --tb=short
+python -m ai_planner.failure_classifier --report pytest_report.json \
+  --out specs/healing_reports/run-2026-07-11.md
+```
+
+**Result:** 25/25 failures correctly classified as `ENVIRONMENT_ISSUE`, zero false
+positives into `LOCATOR_DRIFT` or `TIMING_ISSUE`. Every rationale cited the specific
+evidence for that test (a `#username` timeout, an HTTP 403, a JSON decode error) rather
+than a generic statement, and one rationale (`test_api_get_patient_by_uuid`) correctly
+traced a causal chain: the search step failed to return JSON because of the environment
+block, which is why the downstream UUID lookup crashed — not two separate problems.
+
+One suggested fix was genuinely worth implementing on its own merits, independent of
+the outage: *add a response-status check right after `page.goto()`, before waiting on
+any locator, to fail fast with a clear "environment unreachable" signal instead of a
+blind 20-second timeout.* Full report: `specs/healing_reports/run-2026-07-11.md`.
+
+### An honest limitation, not just a highlight
+
+15 of the 25 rationales are near-identical restatements of "same `#username` timeout as
+all other UI tests." That's not incorrect — it genuinely is the same root cause — but
+it means the report reads as repetitive past the first few entries rather than adding
+new insight per test. A future improvement would be to deduplicate identical-root-cause
+failures into a single grouped entry instead of repeating the same rationale 15 times.
