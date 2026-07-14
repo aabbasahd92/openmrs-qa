@@ -7,3 +7,4 @@ screenshots/
 .DS_Store
 /tmp/
 specs/pending/
+pytest_report.json

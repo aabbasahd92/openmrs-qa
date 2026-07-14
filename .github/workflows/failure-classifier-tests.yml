@@ -1,0 +1,30 @@
+name: Failure Classifier Smoke Tests
+
+on:
+  push:
+    paths:
+      - "ai_planner/failure_classifier.py"
+      - "ai_planner/test_failure_classifier.py"
+  pull_request:
+    paths:
+      - "ai_planner/failure_classifier.py"
+      - "ai_planner/test_failure_classifier.py"
+  workflow_dispatch:
+
+jobs:
+  classifier-unit-tests:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.9"
+
+      - name: Install dependencies
+        run: |
+          pip install anthropic pytest
+
+      - name: Run failure classifier unit tests (mocked, no live API calls)
+        run: pytest ai_planner/test_failure_classifier.py -v
