@@ -82,7 +82,7 @@ python -m ai_planner.planner \
 ### What happened
 
 `test3.openmrs.org` returned a Cloudflare bot-challenge page instead of the OpenMRS
-application (Ray ID `a19a2f752d880607`) — headless Chromium was blocked before reaching
+application (Ray ID `a19a2f752d880607`) - headless Chromium was blocked before reaching
 any real UI. This was not staged; it's the live state of the public demo server at
 the time this was run.
 
@@ -97,7 +97,7 @@ evidence rather than asserting a conclusion, for example:
 > search results list could be confirmed in the live DOM."
 
 The three `REJECTED_UNSUPPORTED` scenarios (payment collection, SMS/email reminders,
-multi-provider conflict detection) were correctly rejected on a *different* basis —
+multi-provider conflict detection) were correctly rejected on a *different* basis -
 grounded in the requirement's explicit "Out of Scope" list, not the DOM evidence. The
 planner kept these two reasoning paths (evidence-based vs. requirement-based
 rejection) distinct rather than conflating them.
@@ -117,7 +117,7 @@ review catch, not something scripted into the test.
 An AI planner with no evidence requirement would have had no reason not to invent
 plausible-sounding scenarios for a "typical" appointment-scheduling flow. Grounding
 every scenario in a live DOM snapshot meant this run produced zero false positives
-against an environment that was, in fact, completely inaccessible — the correct
+against an environment that was, in fact, completely inaccessible - the correct
 outcome, arrived at honestly rather than by coincidence.
 
 ---
@@ -155,7 +155,7 @@ positives into `LOCATOR_DRIFT` or `TIMING_ISSUE`. Every rationale cited the spec
 evidence for that test (a `#username` timeout, an HTTP 403, a JSON decode error) rather
 than a generic statement, and one rationale (`test_api_get_patient_by_uuid`) correctly
 traced a causal chain: the search step failed to return JSON because of the environment
-block, which is why the downstream UUID lookup crashed — not two separate problems.
+block, which is why the downstream UUID lookup crashed - not two separate problems.
 
 One suggested fix was genuinely worth implementing on its own merits, independent of
 the outage: *add a response-status check right after `page.goto()`, before waiting on
@@ -165,7 +165,7 @@ blind 20-second timeout.* Full report: `specs/healing_reports/run-2026-07-11.md`
 ### An honest limitation, not just a highlight
 
 15 of the 25 rationales are near-identical restatements of "same `#username` timeout as
-all other UI tests." That's not incorrect — it genuinely is the same root cause — but
+all other UI tests." That's not incorrect - it genuinely is the same root cause - but
 it means the report reads as repetitive past the first few entries rather than adding
 new insight per test. A future improvement would be to deduplicate identical-root-cause
 failures into a single grouped entry instead of repeating the same rationale 15 times.
