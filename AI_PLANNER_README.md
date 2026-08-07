@@ -21,7 +21,7 @@ human reviews the plan, checks off the approval boxes, and only then does a
 separate step turn approved scenarios into actual `pytest` + Playwright test
 functions — written by hand, using the existing page objects in `pages/`.
 
-## What this is honestly NOT
+## Out of Scope
 
 - It is not a multi-agent framework. It's one script that makes one
   structured API call and parses the result.
